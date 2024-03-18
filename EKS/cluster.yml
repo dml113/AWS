@@ -1,0 +1,40 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: doc-cluster
+  version: "1.29"
+  region: ap-northeast-2
+
+vpc:
+  subnets:
+    public:
+      public-a: { id: <subnet-id> }
+      public-b: { id: <subnet-id> }
+    private:
+      private-a: { id: <subnet-id> }
+      private-b: { id: <subnet-id> }
+
+managedNodeGroups:
+  - name: doc-app-ng
+    labels: { role: apps }
+    instanceType: t3.medium
+    instanceName: doc-app-ng
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 20
+    privateNetworking: true
+    volumeType: gp2
+    volumeEncrypted: true
+    subnets:
+      - private-a
+      - private-b
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/doc-cluster: "owned"
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        externalDNS: true
+        certManager: true
+        awsLoadBalancerController: true
