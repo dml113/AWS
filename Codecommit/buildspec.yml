@@ -4,22 +4,22 @@ phases:
     commands:
       - echo $AWS_DEFAULT_REGION
       - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 950274644703.dkr.ecr.ap-northeast-2.amazonaws.com
-      - REPOSITORY_NAME="skills-ecr"
+      - REPOSITORY_NAME="<ECR_name>"
       - REPOSITORY_URI=950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/$REPOSITORY_NAME
       - COMMIT_HASH=$(date +"%y%m%d%H%M%S")
       - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t skills-ecr:latest .
-      - docker tag skills-ecr:latest 950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/skills-ecr:latest
+      - docker build -t <ECR_name>:latest .
+      - docker tag <ECR_name>:latest 950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/<ECR_name>:latest
       - docker tag $REPOSITORY_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - printf '[{"name":"golang-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - OLD="950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/skills-ecr:${IMAGE_TAG}"
+      - OLD="950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/<ECR_name>:${IMAGE_TAG}"
       - ECRREPO=$REPOSITORY_URI:$IMAGE_TAG
       - sed -i "s|$OLD|$ECRREPO|g" taskdef.json
       - sed -i s/AWS_DEFAULT_REGION/$AWS_DEFAULT_REGION/ appspec.yml 
