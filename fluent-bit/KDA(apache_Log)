@@ -1,0 +1,29 @@
+# fluent-bit 설치
+curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh
+sudo systemctl start fluent-bit
+sudo systemctl enable fluent-bit
+sudo ln -s /opt/fluent-bit/bin/fluent-bit /usr/local/bin/fluent-bit
+
+# apache 설치
+sudo yum install -y httpd
+sudo chmod +r /var/log/httpd/access_log
+
+# Fluent-Bit 설정 파일 수정
+cd /etc/fluent-bit
+sudo vim fluent-bit.conf
+
+[INPUT]
+    Name tail
+    path /var/log/httpd/access_log
+    Tag apache_log
+
+[FILTER]
+    Name grep
+    Match apache_log
+    Exclude log /health
+
+[OUTPUT]
+    Name  kinesis_streams
+    Match apache_log
+    region ap-northeast-2
+    stream KDA
