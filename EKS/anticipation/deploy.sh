@@ -1,6 +1,18 @@
 #!/bin/bash
 # ECR 로그인 후 image 업로드하고, 아래 명령어들 실행
 
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ sudo mv /tmp/eksctl /usr/bin/
+$ eksctl version
+
+$ curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.0/2024-01-04/bin/linux/amd64/kubectl
+$ chmod +x ./kubectl
+$ sudo mv ./kubectl /usr/bin/
+$ kubectl version --client
+
+# helm 설치
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
 # secrets 생성
 docker login 950274644703.dkr.ecr.ap-northeast-2.amazonaws.com/lee-ecr
 kubectl create secret generic regcred \
