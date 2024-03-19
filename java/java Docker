@@ -4,7 +4,9 @@ cd spring-boot-demo
 build.gradle 파일을 생성하고, 코드를 넣는다.
 
 그 다음, src/main/java/com/example/demo 디렉토리에 DemoApplication.java 파일을 생성하고, 코드를 추가
-  
+
+# curl 설치
+apk --no-cache add curl
 
 # 빌드 단계
 FROM gradle:6.8.3-jdk11 AS build
