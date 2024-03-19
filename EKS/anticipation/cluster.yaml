@@ -1,0 +1,65 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: EKS-clusters
+  version: "1.29"
+  region: ap-northeast-2
+
+vpc:
+  subnets:
+    public:
+      public-a: { id: subnet-0a109975750880ecb }
+      public-c: { id: subnet-00ad336fe2e612cad }
+    private:
+      private-a: { id: subnet-00e42f02a4de05b87 }
+      private-c: { id: subnet-04cc720773d54c94f }
+
+iamIdentityMappings:
+  - arn: arn:aws:iam::950274644703:role/poweruser
+    groups:
+      - system:masters
+    username: admin
+    noDuplicateARNs: true # prevents shadowing of ARNs
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: webapp-ns
+      namespace: webapp
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AdministratorAccess" 
+  - metadata:
+      name: skills-ns
+      namespace: skills
+    attachPolicyARNs:
+      - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+managedNodeGroups:
+  - name: eks-worker
+    labels: { role: apps }
+    instanceType: t3.medium
+    instanceName: worker
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 20
+    privateNetworking: true
+    volumeType: gp2
+    volumeEncrypted: true
+    subnets:
+      - private-a
+      - private-c
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/doc-cluster: "owned"
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        externalDNS: true
+        certManager: true
+# fargateProfile을 주석처리하고, 생성 후 다시 주석처리를 해제한다.
+fargateProfiles:
+  - name: skills
+    selectors:
+      - namespace: skills
