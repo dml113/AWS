@@ -1,0 +1,9 @@
+# service account 생성
+eksctl create iamserviceaccount --cluster doc-clusters --attach-policy-arn 
+<생성한 policy arn> --namespace default --name secret-role --approve
+# service account 생성됐는지 확인
+kubectl get sa
+# pod에 접속
+kubectl exec -it <pod ID> -- /bin/bash 
+# 접속 후 secret account 잘 받아왔는지 확인
+aws secretsmanager get-secret-value --secret-id uilee
