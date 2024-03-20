@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  exported-variables: #내보낼 환경 변수 지정합니다.
+    - AWS_DEFAULT_REGION
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/wsi-fargate-ecr-repo
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI\:latest .
+      - docker tag $REPOSITORY_URI\:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI\:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"wsi-rolling-deploy","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '{"ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
+artifacts:
+    files:
+      - imagedefinitions.json
+      - imageDetail.json
+      - appspec.yml
+      - taskdef.json
+    secondary-artifacts:
+      DefinitionArtifact:
+        files:
+          - appspec.yml
+          - taskdef.json
+      ImageArtifact:
+        files:
+          - imageDetail.json
