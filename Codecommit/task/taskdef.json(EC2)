@@ -1,0 +1,31 @@
+{
+  "family": "wsi-ecs-ec2-tf",
+  "networkMode": "bridge",
+  "memory": "256",
+  "executionRoleArn": "arn:aws:iam::040217728499:role/ecsTaskExecutionRole",
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "containerDefinitions": [
+    {
+      "name": "wsi-ec2-containerimages",
+      "image": "<IMAGE_NAME>",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/wsi-ecs-ec2-tf",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 8080
+        }
+      ],
+      "essential": true
+    }
+  ]
+}
