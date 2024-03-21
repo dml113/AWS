@@ -1,6 +1,6 @@
 #!/bin/bash
 sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-sed -i 's/#Port 22/Port 2222/g' /etc/ssh/sshd_config
 echo 'password' | passwd --stdin ec2-user
 echo 'AuthenticationMethods password,publickey' >> /etc/ssh/sshd_config
+sed -i 's/#Port 22/Port 2222/g' /etc/ssh/sshd_config
 systemctl restart sshd
