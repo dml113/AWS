@@ -1,5 +1,10 @@
 #!/bin/bash
 # ECR 로그인 후 image 업로드하고, 아래 명령어들 실행
+# cluster 실행 후 
+# docker 설치
+# secrets manager IAM policy 생성
+# ECR 생성
+# subnet에 태그 달기
 
 $ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 $ sudo mv /tmp/eksctl /usr/bin/
