@@ -1,0 +1,12 @@
+#!/bin/bash
+# password 설정
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+echo 'password' | passwd --stdin ec2-user
+echo 'AuthenticationMethods password,publickey' >> /etc/ssh/sshd_config
+systemctl restart sshd
+
+# homebrew 설치
+git clone https://github.com/Homebrew/brew homebrew
+eval "$(homebrew/bin/brew shellenv)"
+brew update --force --quiet
+chmod -R go-w "$(brew --prefix)/share/zsh"
