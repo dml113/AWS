@@ -9,14 +9,14 @@ build.gradle 파일을 생성하고, 코드를 넣는다.
 apk --no-cache add curl
 
 # 빌드 단계
-FROM gradle:6.8.3-jdk11 AS build
+FROM gradle:6.8.3-jdk11 AS build 
 WORKDIR /app
 COPY . /app
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon   # gradle 빌드
 
 # 실행 단계
-FROM adoptopenjdk/openjdk11:alpine-jre
-WORKDIR /app
+FROM adoptopenjdk/openjdk11:alpine-jre 
+WORKDIR /app 
 COPY --from=build /app/build/libs/*.jar /app/app.jar
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
