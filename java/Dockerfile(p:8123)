@@ -10,11 +10,13 @@ RUN java -version
 
 COPY . /usr/src/myapp/
 WORKDIR /usr/src/myapp/
-RUN set -Eeux \
-    && apk --no-cache add maven \
+RUN set -Eeux \ 
+    && apk --no-cache add maven \ 
     # smoke test to verify if maven is available
     && mvn --version
+# Maven을 설치하고 Maven이 정상적으로 설치되었는지 확인하는 smoke test를 실행
 RUN mvn package
+# 
 
 # Stage 2 (to create a downsized "container executable", ~180MB)
 FROM eclipse-temurin:17-jre-alpine
