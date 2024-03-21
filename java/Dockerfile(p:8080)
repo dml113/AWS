@@ -12,11 +12,11 @@ apk --no-cache add curl
 FROM gradle:6.8.3-jdk11 AS build 
 WORKDIR /app
 COPY . /app
-RUN gradle build --no-daemon   # gradle 빌드
+RUN gradle build --no-daemon   # gradle build --no-daemon 명령을 실행하여 애플리케이션을 빌드합니다. --no-daemon 옵션은 Gradle 데몬을 사용하지 않고 빌드를 실행
 
 # 실행 단계
 FROM adoptopenjdk/openjdk11:alpine-jre 
 WORKDIR /app 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
-EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+COPY --from=build /app/build/libs/*.jar /app/app.jar  # 이전 단계에서 빌드한 JAR 파일(*.jar)을 /app/app.jar로 복사
+EXPOSE 8080  # 컨테이너 내부에서 8080 포트를 노출합니다.
+CMD ["java", "-jar", "app.jar"]  # 컨테이너가 시작될 때 java -jar app.jar 명령을 실행하여 애플리케이션을 실행합니다.
