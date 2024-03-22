@@ -1,0 +1,12 @@
+# Step 1: Build Stage
+FROM gradle:7.2.0-jdk11 AS build
+WORKDIR /app
+COPY . /app
+RUN gradle build --no-daemon
+
+# Step 2: Run Stage
+FROM openjdk:11-jre-slim
+WORKDIR /app
+COPY --from=build /app/build/libs/my-application.jar /app/my-application.jar
+EXPOSE 8080
+CMD ["java", "-jar", "my-application.jar"]
