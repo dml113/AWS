@@ -1,0 +1,33 @@
+# 베이스 이미지 설정
+FROM gradle:7.2.0-jdk11 AS builder
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# Gradle 파일 복사
+COPY build.gradle .
+COPY settings.gradle .
+COPY gradle.properties .
+COPY gradlew .
+COPY gradlew.bat .
+
+# 소스 코드 복사
+COPY src src
+
+# 의존성 다운로드 및 빌드
+RUN ./gradlew build --no-daemon
+
+# 새로운 베이스 이미지 설정
+FROM openjdk:11-jre-slim
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 이전 단계에서 생성한 JAR 파일을 가져옴
+COPY --from=builder /app/build/libs/my-application.jar /app/my-application.jar
+
+# 포트 노출
+EXPOSE 8080
+
+# 애플리케이션 실행
+CMD ["java", "-jar", "my-application.jar"]
