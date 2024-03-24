@@ -1,0 +1,26 @@
+1. 소스코드에서 build.gradle 파일 열고 java section 확인
+> build.gradle
+java {
+  sourceCompatibillity = '17'
+}
+
+여기서 sourceCompatibility에 적힌 값이 17 이므로, java 17 버전을 설치 후 진행
+$ dnf install java-17-amazon-corretto –y (AMZN 2023 환경)
+
+2. ./gradlew로 build -> Code Build에서 진행
+아래와 같이 권한을 부여한다;
+$ chmod +x ./gradlew
+
+그 후 ./gradlew로 build 실행
+$ ./gradlew build
+
+3. Dockerfile Examples -> Code Build에서 진행
+FROM openjdk:17
+WORKDIR /apps/
+COPY ./build/libs/wsc1-0.0.1-SNAPSHOT.jar . 
+CMD ["java", "-jar", "/apps/wsc1-0.0.1-SNAPSHOT.jar"]
+
+4. Application 실행하기
+빌드가 완료되었으면 ./build/libs/ 경로에 jar 파일이 있을 것이다. (아래 그림 참고)
+(여기서 –plain.jar가 뒤에 붙은 파일은 없는 파일로 취급)
+아래 명령어로 build가 된 jar 파일을 실행한다. $ java –jar ./build/libs/wsc1-0.0.1-SNAPSHOT.jar
